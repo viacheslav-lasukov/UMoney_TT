@@ -1,0 +1,174 @@
+@startuml e2e b2c bank transaction
+
+actor Sender as sender
+boundary "Client\nApp" as clientApp
+participant "B2C\nService" as b2c
+participant "User\nService" as userService
+participant "Auth\nService" as authService
+participant "Accounts\nService" as accountsService
+participant "Notification\nService" as notifService
+participant "Payment\nGateway" as paymentGateway
+
+activate sender
+sender -> clientApp: open app, login
+activate clientApp
+
+clientApp -> b2c: GET /user/login(username, password)
+  activate b2c
+  b2c -> authService: POST /oauth/token(client_id, client_secret, grant_type)
+    activate authService
+    authService --> b2c: access_token
+  deactivate authService
+  b2c -> b2c: cache the token
+  b2c --> clientApp: 200 OK
+  clientApp -> b2c: GET /user(username)
+  b2c -> userService: GET /user(username)
+    activate userService
+    userService -> authService: POST /oauth/token/verify(token)
+    activate authService
+    authService --> userService: 200 OK
+    deactivate authService
+    userService --> b2c: user_info
+  deactivate userService
+  b2c --> clientApp: user_info
+deactivate b2c
+
+clientApp -> b2c: GET /user/{userId}/accounts
+  activate b2c
+  b2c -> accountsService: GET /accountsByUserId(userId)
+    activate accountsService
+      accountsService -> authService: POST /oauth/token/verify(token)
+      activate authService
+      authService --> accountsService: 200 OK
+      deactivate authService
+    accountsService --> b2c: user_accounts
+  deactivate accountsService
+b2c --> clientApp: account info
+deactivate b2c
+
+clientApp -> sender: display account info
+sender -> clientApp: choose transfer by account number
+
+clientApp -> b2c: GET /account/getByNumber(number)
+  activate b2c
+  b2c -> accountsService: GET /account/getByNumber(number)
+    activate accountsService
+    accountsService -> authService: POST /oauth/token/verify(token)
+    activate authService
+    authService --> accountsService: 200 OK
+    deactivate authService
+    accountsService --> b2c: receiver account number, owner
+  deactivate accountsService
+  b2c --> clientApp: receiver account number, owner
+deactivate b2c
+
+clientApp -> sender: display receiver account info
+sender -> clientApp: confirm
+deactivate sender
+clientApp -> b2c: POST /transaction(receiverAccId, amount)
+activate b2c
+b2c -> accountsService: POST /transaction/blockAmount(senderAccId, receiverAccId, amount)
+activate accountsService
+accountsService -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> accountsService: 200 OK
+deactivate authService
+accountsService -> accountsService: count commission 
+accountsService -> accountsService: check available amount
+
+alt not enough money
+	accountsService --> b2c: 409 Conflict
+	b2c --> clientApp: 409 Conflict
+	clientApp ->sender: display error
+end
+
+accountsService -> accountsService: block(senderAccId, amount)
+accountsService -> authService: POST /oauth/token(client_id, client_secret, grant_type)
+activate authService
+authService --> accountsService: access_token
+deactivate authService
+accountsService -> paymentGateway: POST /transaction(senderAccId, receiverAccId, amount)
+activate paymentGateway
+paymentGateway -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> paymentGateway: 200 OK
+deactivate authService
+create entity Transaction
+paymentGateway -> Transaction: create(...)
+
+note right of paymentGateway
+  sender
+  receiver
+  amount
+  dateTime=now()
+  status=New
+end note
+
+activate Transaction
+paymentGateway --> accountsService: 201 Created, transaction id
+deactivate paymentGateway
+accountsService -> notifService: POST /notify(receiverId, channel=sms, template=confirmation)
+activate notifService
+
+notifService -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> notifService: 200 OK
+deactivate authService
+notifService -> notifService: generate SMS
+notifService --> accountsService: 201 Created
+accountsService -> accountsService: map transaction\nid to sms code
+accountsService --> b2c: 201 Created
+deactivate accountsService
+b2c --> clientApp: 201 Created
+deactivate b2c
+clientApp -> sender: display SMS input field
+notifService -> sender: SMS code
+deactivate notifService
+activate sender
+sender -> clientApp: enter SMS code
+clientApp -> b2c: POST /transaction/{userId}/confirm(smsCode)
+activate b2c
+b2c -> accountsService: POST /transaction/confirm(smsCode)
+activate accountsService
+accountsService -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> accountsService: 200 OK
+deactivate authService
+accountsService -> accountsService: find transaction\nid by sms code
+accountsService -> paymentGateway: POST /transaction/confirm(transactionId)
+activate paymentGateway
+paymentGateway -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> paymentGateway: 200 OK
+deactivate authService
+paymentGateway -> Transaction: update(status=completed)
+deactivate Transaction
+paymentGateway --> accountsService: 200 OK
+deactivate paymentGateway
+accountsService --> b2c: 200 OK
+b2c --> clientApp: 200 OK
+deactivate b2c
+clientApp -> sender: display success
+deactivate clientApp
+deactivate sender
+accountsService -> accountsService: withdraw from sender,\ntop-up receiver
+accountsService -> notifService: POST /notify(receiverId, channel=sms, template=topup)
+activate notifService
+notifService -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> notifService: 200 OK
+deactivate authService
+actor Receiver as receiver
+notifService->receiver: notify about top-up
+deactivate notifService
+accountsService -> notifService: POST /notify(receiverId, channel=sms, template=withdrawal)
+deactivate accountsService
+activate notifService
+notifService -> authService: POST /oauth/token/verify(token)
+activate authService
+authService --> notifService: 200 OK
+deactivate authService
+notifService->sender: notify about withdrawal
+deactivate notifService
+
+@enduml

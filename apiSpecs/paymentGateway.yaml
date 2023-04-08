@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  title: Account 
+  version: 1.0.0
+paths:
+  /transaction:
+    post:
+      tags:
+        - transaction
+      summary: Create a transaction
+      description: Create a transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderAccountId:
+                  type: string
+                receiverAccountId:
+                  type: string
+                amount:
+                  type: integer
+      responses:
+        '200': &ok
+          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+        '400': &badRequest
+          description: Request is missing required fields or has invalid fields
+        '401': &unauthorized
+          description: Unauthorized
+  /transaction/confirm:
+    post:
+      tags:
+        - transaction
+      summary: Confirm the transaction
+      description: Confirm the transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId:
+                  type: string
+      responses:
+        '200': *ok
+        '400': *badRequest
+        '401': *unauthorized

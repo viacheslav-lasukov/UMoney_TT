@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Accounts Service
+  version: 1.0.0
+paths:
+  /notify:
+    post:
+      tags:
+        - notify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template:
+                  type: string
+                  enum:
+                    - confirmation
+                    - withdrawal
+                    - topup
+                channel:
+                  type: string
+                  enum:
+                    - sms
+                    - email
+                    - phoneCall
+                    - push
+                receiverId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  smsCode:
+                    type: string
+        '400': &badRequest
+          description: Request is missing required fields or has invalid fields
+        '401': &unauthorized
+          description: Unauthorized

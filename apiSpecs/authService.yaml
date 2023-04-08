@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Authorization Service
+  description: API for managing authentication and authorization
+paths:
+  /oauth/token:
+    post:
+      tags:
+        - oauth
+      summary: Generate access token
+      description: Generates an access token that can be used to access protected resources
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+                  example: client_credentials
+                client_id:
+                  type: string
+                  example: my_client_id
+                client_secret:
+                  type: string
+                  example: my_client_secret
+              required:
+                - grant_type
+                - client_id
+                - client_secret
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 3600
+        '400':
+          description: Bad Request
+  /oauth/token/verify:
+    post:
+      tags:
+        - oauth
+      summary: Verify access token
+      description: Verifies the validity of an access token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+              required:
+                - access_token
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /oauth/token/revoke:
+    post:
+      tags:
+        - oauth
+      summary: Revoke access token
+      description: Revokes the given access token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+              required:
+                - token
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request

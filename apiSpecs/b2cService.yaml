@@ -1,0 +1,176 @@
+openapi: 3.0.3
+info:
+  title: B2C Service
+  version: 1.0.0
+paths:
+  /user/{userId}/accounts:
+    get:
+      tags:
+        - user
+      responses:
+        '200':
+          description: Received an account info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    number:
+                      type: string
+                    amount:
+                      type: integer
+                    status:
+                      type: string
+                    ownerId:
+                      type: string
+        '400': &badRequest
+          description: Request is missing required fields or has invalid fields
+        '401': &unauthorized
+          description: Unauthorized
+  /account/getByNumber:
+    get:
+      tags:
+        - account
+      parameters:
+          - name: accountNumber
+            in: query
+            description: Account unique number
+            required: true
+            schema: 
+              type: string
+      responses:
+        '200':
+          description: Received an account info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  number:
+                    type: string
+                  status:
+                    type: string
+                  owner:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      firstName: 
+                        type: string
+                      lastName:
+                        type: string
+        '400': *badRequest
+        '401': *unauthorized
+  /user/{userId}/transaction:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receiverId:
+                  type: string
+                amount:
+                  type: integer
+              required:
+                - receiverId
+                - amount
+      responses:
+        '201':
+          description: Created
+        '400': *badRequest
+        '401': *unauthorized
+        '409':
+          description: Not enough money in account
+  /user/{userId}/transaction/confirm:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                smsCode:
+                  type: string
+              required:
+                - smsCode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receiptUrl:
+                    type: string
+        '400': *badRequest
+        '401': *unauthorized
+  /user/login:
+    post:
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Got a token
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400': *badRequest
+  /user:
+    get:
+      tags:
+        - user
+      parameters:
+        - name: username
+          in: query
+          description: Username or phone or email
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  id:
+                    type: string
+                  firstName: 
+                    type: string
+                  lastName:
+                    type: string
+                  status: 
+                    type: string
+        '400': *badRequest
+        '401': *unauthorized
