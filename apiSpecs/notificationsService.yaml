@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Accounts Service
+  title: Notifications Service
   version: 1.0.0
 paths:
   /notify:
