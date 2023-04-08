@@ -8,8 +8,8 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700"
       rel="stylesheet"
     />
-    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
-    <link rel="stylesheet" type="text/css" href="./swagger-ui-custom.css" />
+    <link rel="stylesheet" type="text/css" href="dist/swagger-ui.css" />
+    <link rel="stylesheet" type="text/css" href="dist/swagger-ui-custom.css" />
     <link
       rel="icon"
       type="image/png"
@@ -92,18 +92,18 @@
 
     <div id="swagger-ui"></div>
 
-    <script src="./swagger-ui-bundle.js"></script>
-    <script src="./swagger-ui-standalone-preset.js"></script>
+    <script src="dist/swagger-ui-bundle.js"></script>
+    <script src="dist/swagger-ui-standalone-preset.js"></script>
     <script>
       window.onload = function () {
         // Build a system
         const ui = SwaggerUIBundle({
           urls: [
-            { url: "../apiSpecs/accountsService.yaml", name: "Accounts Service" },
-            { url: "../apiSpecs/authService.yaml", name: "Authorization Service" },
-            { url: "../apiSpecs/b2cService.yaml", name: "B2C Service" },
-            { url: "../apiSpecs/notificationsService.yaml", name: "Notifications Service" },
-            { url: "../apiSpecs/paymentGateway.yaml", name: "Payment Gateway" },
+            { url: "apiSpecs/accountsService.yaml", name: "Accounts Service" },
+            { url: "apiSpecs/authService.yaml", name: "Authorization Service" },
+            { url: "apiSpecs/b2cService.yaml", name: "B2C Service" },
+            { url: "apiSpecs/notificationsService.yaml", name: "Notifications Service" },
+            { url: "apiSpecs/paymentGateway.yaml", name: "Payment Gateway" },
           ],
           "urls.primaryName": "Pets",
           dom_id: "#swagger-ui",
