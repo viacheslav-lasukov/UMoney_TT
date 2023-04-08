@@ -1,1 +1,1 @@
-![Sequence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://https://raw.githubusercontent.com/viacheslav-lasukov/UMoney_TT/main/sequenceDiagram.puml)
+![Sequence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/viacheslav-lasukov/UMoney_TT/main/sequenceDiagram.puml)
