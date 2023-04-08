@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Account 
+  title: Payment Gateway 
   version: 1.0.0
 paths:
   /transaction:
