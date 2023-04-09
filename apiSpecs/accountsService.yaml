@@ -7,6 +7,8 @@ paths:
     get:
       tags:
         - accounts
+      description: Get user accounts
+      summary: Get user accounts
       parameters:
         - name: userId
           in: query
@@ -16,7 +18,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Received an account info
+          description: Received accounts info
           content:
             application/json:
               schema:
@@ -42,6 +44,8 @@ paths:
     get:
       tags:
         - account
+      description: Get short bank account info
+      summary: Get short bank account info
       parameters:
         - name: number
           in: query
@@ -78,6 +82,8 @@ paths:
     post:
       tags:
         - transaction
+      description: Block an ammount due to initiated transaction
+      summary: Block an ammount due to initiated transaction
       requestBody:
         content:
           application/json:
@@ -101,6 +107,8 @@ paths:
     post:
       tags:
         - transaction
+      description: Confirm previously initiated transaction by SMS code
+      summary: Confirm previously initiated transaction by SMS code
       requestBody:
         content:
           application/json:

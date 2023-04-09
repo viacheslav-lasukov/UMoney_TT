@@ -7,27 +7,30 @@ paths:
     post:
       tags:
         - notify
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                template:
-                  type: string
-                  enum:
-                    - confirmation
-                    - withdrawal
-                    - topup
-                channel:
-                  type: string
-                  enum:
-                    - sms
-                    - email
-                    - phoneCall
-                    - push
-                receiverId:
-                  type: string
+      description: Generate and send a notification
+      summary: Generate and send a notification
+      parameters:
+        - name: template
+          in: query
+          schema:
+            type: string
+            enum:
+              - confirmation
+              - withdrawal
+              - topup
+        - name: channel
+          in: query
+          schema:
+            type: string
+            enum:
+              - sms
+              - email
+              - phoneCall
+              - push
+        - name: receiverId
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: OK
