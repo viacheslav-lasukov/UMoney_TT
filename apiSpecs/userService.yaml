@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: User Service
+  version: 1.0.0
+paths:
+  /user:
+    get:
+      tags:
+        - user
+      parameters:
+        - name: username
+          in: query
+          description: Username or email or phone
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  firstName: 
+                    type: string
+                  lastName:
+                    type: string
+                  status: 
+                    type: string
+        '400': &badRequest
+          description: Request is missing required fields or has invalid fields
+        '401': &unauthorized
+          description: Unauthorized

@@ -13,7 +13,7 @@ activate sender
 sender -> clientApp: open app, login
 activate clientApp
 
-clientApp -> b2c: GET /user/login(username, password)
+clientApp -> b2c: POST /user/login(username, password)
   activate b2c
   b2c -> authService: POST /oauth/token(client_id, client_secret, grant_type)
     activate authService

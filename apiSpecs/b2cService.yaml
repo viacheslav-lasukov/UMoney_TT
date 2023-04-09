@@ -147,15 +147,19 @@ paths:
                     type: string
         '400': *badRequest
   /user:
-    get:
+    post:
       tags:
         - user
-      parameters:
-        - name: username
-          in: query
-          description: Username or phone or email
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         '200':
           description: OK
