@@ -9,8 +9,10 @@ participant "User\nService" as userService
 / note over userService: User profile info\nmanagement
 participant "Authentication\nand Authorization\nService" as authService
 participant "Accounts\nService" as accountsService
+/ note over accountsService: Account info,\noperations
 participant "Notification\nService" as notifService
 participant "Payment\nGateway" as paymentGateway
+/ note over paymentGateway: Transactions\nhandling
 
 activate sender
 sender -> clientApp: open an app login page\nor be redirected to it
