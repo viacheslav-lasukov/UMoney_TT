@@ -7,6 +7,13 @@ paths:
     get:
       tags:
         - user
+      description: Get user bank accounts
+      summary: Get user bank accounts
+      parameters:
+        - name: token
+          in: header
+          schema: 
+            type: string
       responses:
         '200':
           description: Received an account info
@@ -35,13 +42,19 @@ paths:
     get:
       tags:
         - account
+      description: Get a particular non-user bank account short info
+      summary: Get a particular non-user bank account short info
       parameters:
-          - name: accountNumber
-            in: query
-            description: Account unique number
-            required: true
-            schema: 
-              type: string
+        - name: token
+          in: header
+          schema: 
+            type: string
+        - name: accountNumber
+          in: query
+          description: Account unique number
+          required: true
+          schema: 
+            type: string
       responses:
         '200':
           description: Received an account info
@@ -71,6 +84,13 @@ paths:
     post:
       tags:
         - user
+      description: Initiate a transaction
+      summary: Initiate a transaction
+      parameters:
+        - name: token
+          in: header
+          schema: 
+            type: string
       requestBody:
         content:
           application/json:
@@ -95,6 +115,13 @@ paths:
     post:
       tags:
         - user
+      description: Confirm the transaction by sending the received SMS code
+      summary: Confirm the transaction by sending the received SMS code
+      parameters:
+        - name: token
+          in: header
+          schema: 
+            type: string
       requestBody:
         content:
           application/json:
@@ -121,6 +148,8 @@ paths:
     post:
       tags:
         - user
+      description: Get a token for communication between the client and B2C Service
+      summary: Get a token for communication between the client and B2C Service
       requestBody:
         required: true
         content:
@@ -147,19 +176,21 @@ paths:
                     type: string
         '400': *badRequest
   /user:
-    post:
+    get:
       tags:
         - user
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
+      description: Get user info
+      summary: Get user info
+      parameters:
+        - name: token
+          in: header
+          schema: 
+            type: string
+        - name: username
+          in: query
+          description: Username or phone or email
+          schema:
+            type: string
       responses:
         '200':
           description: OK

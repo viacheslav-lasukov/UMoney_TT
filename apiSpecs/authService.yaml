@@ -47,7 +47,7 @@ paths:
                   expires_in:
                     type: integer
                     example: 3600
-        '400':
+        '400': &badRequest
           description: Bad Request
   /oauth/token/verify:
     post:
@@ -67,7 +67,7 @@ paths:
               required:
                 - access_token
       responses:
-        '200':
+        '200': &ok
           description: OK
         '400':
           description: Bad Request
@@ -93,3 +93,23 @@ paths:
           description: OK
         '400':
           description: Bad Request
+  /authenticate:
+    post:
+      tags:
+        - authentication
+      description: Authenticate the user
+      summary: Authenticate the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200': *ok
+        '400': *badRequest
+        

@@ -2,25 +2,33 @@
 
 actor Sender as sender
 boundary "Client\nApp" as clientApp
+/ note over clientApp: Web,\niOS app,\nAndroid App
 participant "B2C\nService" as b2c
+/ note over b2c: Facade for\nClient App\nrequests
 participant "User\nService" as userService
-participant "Auth\nService" as authService
+/ note over userService: User profile info\nmanagement
+participant "Authentication\nand Authorization\nService" as authService
 participant "Accounts\nService" as accountsService
 participant "Notification\nService" as notifService
 participant "Payment\nGateway" as paymentGateway
 
 activate sender
-sender -> clientApp: open app, login
+sender -> clientApp: open an app login page\nor be redirected to it
 activate clientApp
 
 clientApp -> b2c: POST /user/login(username, password)
   activate b2c
+  b2c -> authService: POST /authenticate(username, password)
+    activate authService
+    authService --> b2c: 200 OK
+  deactivate authService
   b2c -> authService: POST /oauth/token(client_id, client_secret, grant_type)
     activate authService
     authService --> b2c: access_token
   deactivate authService
-  b2c -> b2c: cache the token
-  b2c --> clientApp: 200 OK
+  b2c -> b2c: cache the access_token
+  b2c -> b2c: generate token for client
+  b2c --> clientApp: token
   clientApp -> b2c: GET /user(username)
   b2c -> userService: GET /user(username)
     activate userService
@@ -28,9 +36,9 @@ clientApp -> b2c: POST /user/login(username, password)
     activate authService
     authService --> userService: 200 OK
     deactivate authService
-    userService --> b2c: user_info
+    userService --> b2c: userInfo
   deactivate userService
-  b2c --> clientApp: user_info
+  b2c --> clientApp: userInfo
 deactivate b2c
 
 clientApp -> b2c: GET /user/{userId}/accounts
